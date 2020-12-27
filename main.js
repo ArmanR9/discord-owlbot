@@ -8,9 +8,9 @@
 */
 
 function quadratic_calculator(a, b, c){
-    if(a === undefined || b === undefined || c == undefined){
+
+    if(a === undefined || b === undefined || c == undefined)
         return undefined;    
-    }
 
     let answers = {x1:0, x2:0};
 
@@ -22,6 +22,8 @@ function quadratic_calculator(a, b, c){
 
     return answers;
 }
+
+// Discord Boilerplate
 
 const {Client, MessageEmbed} = require('discord.js');
 
@@ -36,6 +38,8 @@ const PREFIX2 = '='
 client.on('ready', () => {
     console.log('Ullu is online!'); 
 })
+
+// Command Handler
 
 client.on('message', message => {
     
