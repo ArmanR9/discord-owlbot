@@ -29,7 +29,7 @@ const {Client, MessageEmbed} = require('discord.js');
 
 const client = new Client();
 
-// const config = require('./config.json');
+const config = require('./config.json');
 
 
 const PREFIX1 = '!';
@@ -88,5 +88,4 @@ client.on('message', message => {
 
 });
 
-client.login(process.env.BOT_TOKEN);
-//client.login(config.token);
+client.login(config.token);
