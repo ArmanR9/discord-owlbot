@@ -7,6 +7,8 @@
 /* @return -> Tuple with two solutions (Access via res.x1 and res.x2)
 */
 
+const blacklistedWords = ["Fuck", "fuck", "fuuck", "fuuckk", "fucck", "Fucck", "Fucckk", "fuckk", "fuk", "FUK", "Fukk", "Fukkk", "fukkk", "Fulck", "fukk", "Fuk", "fuckkk", "FUCK", "FUUCK", "FUCKK", "FUUCKK", "Fuckk", "Fuuck", "Fuckkk", "bitch", "bitchh", "biitch", "Bitch", "BITCH"];
+
 function quadratic_calculator(a, b, c){
 
     if(a === undefined || b === undefined || c == undefined)
@@ -21,6 +23,27 @@ function quadratic_calculator(a, b, c){
         return undefined;
 
     return answers;
+}
+
+
+function findPermutations (string) {
+
+ if (string.length < 2) return string; // This is our break condition
+
+  var permutations = []; // This array will hold our permutations
+  for (var i = 0; i < string.length; i++) {
+    var char = string[i];
+
+    // Cause we don't want any duplicates:
+    if (string.indexOf(char) != i) // if char was used already
+      continue; // skip it this time
+
+    var remainingString = string.slice(0, i) + string.slice(i + 1, string.length); //Note: you can concat Strings via '+' in JS
+
+    for (var subPermutation of findPermutations(remainingString))
+      permutations.push(char + subPermutation)
+  }
+  return permutations;
 }
 
 // Discord Boilerplate
@@ -42,18 +65,90 @@ client.on('ready', () => {
 // Command Handler
 
 client.on('message', message => {
-    
+
     let args = message.content.substring(PREFIX1.length).split(" ");
-    
+    let msg2 = message.content.split(" ");
+
+    /*
+        
+    for(let a = 0; a < msg2.length; a++){
+
+        if(message.content[0] === '!'){
+            break;
+        }
+
+        else{
+
+        let permutationsArray = findPermutations(msg2[a]);
+
+        if(permutationsArray === undefined)
+            break;
+
+        for(let i = 0; i < permutationsArray.length; i++){
+
+            if(permutationsArray === undefined)
+                break;
+
+            if(permutationsArray[i] === "ullu" || permutationsArray[i] === "Ullu" || permutationsArray[i] === "ULLU"){
+                for(let j = 0; j < 5; j++){
+                    console.log("the bug is happening here?");
+                    message.channel.send("Sukhraj is an ullu!");
+                }
+            }
+
+            for(let j = 0; j < blacklistedWords.length; ++j){
+                if(permutationsArray[i] === blacklistedWords[j])
+                    message.channel.send("No swearing bud.");
+            }
+        }
+      }
+    }
+    */
+
  
     if(args[0] == 'ullu') { 
+            console.log("Creating embed\n");
             const Embed = new MessageEmbed()
             .setTitle("Next Level Code")
             .setColor(0xFF0000)
             .setDescription("What up ULLU");
             message.author.send(Embed);
-            for(let i = 0; i < 20; i++){
+
+            console.log("Embed sent to author\n");
+
+            for(let z = 0; z < 20; z++){
+                console.log("Sending author message\n");
                 message.author.send("Sukhraj is an ullu");
+            }
+    }
+
+    else if(args[0] == 'ping') { 
+
+            console.log("Creating embed and assigning user to be pinged.");
+            let user = message.mentions.users.first();
+            let iterations = isNaN(args[2]) ? undefined : parseInt(args[2]);
+
+            const Embed = new MessageEmbed()
+            .setTitle("Wake up!")
+            .setColor(0xFF0000)
+            .setDescription("WAKE UP");
+
+            user.send(Embed)
+            
+            console.log("Sent pinged user the embed");
+
+            if(iterations === undefined){
+                for(let z = 0; z < 20; z++){
+                    console.log("Pinging user...");
+                    user.send("Check Discord messages buddy");
+                }
+            }
+
+            else{
+                for(let z = 0; z < iterations; z++){
+                    console.log("Pinging user...");
+                    user.send("Check Discord messages buddy");
+                }
             }
     }
 
