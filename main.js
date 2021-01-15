@@ -5,25 +5,48 @@
 /* @param c -> c term
 /*
 /* @return -> Tuple with two solutions (Access via res.x1 and res.x2)
+/* ... If discriminate value computes to a negative value, -1 will be returned
+/* ... If discriminate value is 0, a tuple will have one solution (x1) and the other will be undefined
 */
 
-const blacklistedWords = ["Fuck", "fuck", "fuuck", "fuuckk", "fucck", "Fucck", "Fucckk", "fuckk", "fuk", "FUK", "Fukk", "Fukkk", "fukkk", "Fulck", "fukk", "Fuk", "fuckkk", "FUCK", "FUUCK", "FUCKK", "FUUCKK", "Fuckk", "Fuuck", "Fuckkk", "bitch", "bitchh", "biitch", "Bitch", "BITCH"];
 
 function quadratic_calculator(a, b, c){
 
-    if(a === undefined || b === undefined || c == undefined)
+    if(isNaN(a) || isNaN(b) || isNaN(c) || (a == 0)){ // a == 0 means divide by zero error
+        console.log("Input passed into quadratic calculator is undefined");
         return undefined;    
+    }
+    
+    const discriminate = Math.pow(b,2) + (-4 * a * c); // Calculating discriminate beforehand to determine number of solutions
+    let solutions = {x1: 0, x2: 0};
 
-    let answers = {x1:0, x2:0};
+    if(discriminate < 0){
+        console.log("Discriminate value inputted is negative!");
+        return -1;
+    }
+    
+    else if(discriminate === 0){
+        console.log("Discriminate is 0, only 1 solution.");
 
-    answers.x1 = (-b + (Math.sqrt(Math.pow(b,2) - 4 * a * c))) / (2*a);
-    answers.x2 = (-b - (Math.sqrt(Math.pow(b,2) - 4 * a * c))) / (2*a);
+        solutions.x1 = (-b + (Math.sqrt(discriminate))) / (2*a);
+        solutions.x2 = undefined;
 
-    if(isNaN(answers.x1) || isNaN(answers.x2))
-        return undefined;
+        return solutions;
+    }
 
-    return answers;
+    else{
+        console.log("Discriminate is positive, 2 solutions.");
+
+        solutions.x1 = (-b + (Math.sqrt(discriminate))) / (2*a);
+        solutions.x2 = (-b - (Math.sqrt(discriminate))) / (2*a);
+
+        return solutions;
+    }
 }
+
+// Blacklisted word variations that should be flagged by the bot
+
+const blacklistedWords = ["Fuck", "fuck", "fuuck", "fuuckk", "fucck", "Fucck", "Fucckk", "fuckk", "fuk", "FUK", "Fukk", "Fukkk", "fukkk", "Fulck", "fukk", "Fuk", "fuckkk", "FUCK", "FUUCK", "FUCKK", "FUUCKK", "Fuckk", "Fuuck", "Fuckkk", "bitch", "bitchh", "biitch", "Bitch", "BITCH"];
 
 
 function findPermutations (string) {
@@ -55,8 +78,8 @@ const client = new Client();
 const config = require('./config.json');
 
 
-const PREFIX1 = '!';
-const PREFIX2 = '='
+const PREFIX1 = '!'; // For ullubot (our bot code)
+const PREFIX2 = '='; // Reserved prefix for Math Bot
 
 client.on('ready', () => {
     console.log('Ullu is online!'); 
@@ -69,49 +92,51 @@ client.on('message', message => {
     let args = message.content.substring(PREFIX1.length).split(" ");
     let msg2 = message.content.split(" ");
 
-    /*
-        
-    for(let a = 0; a < msg2.length; a++){
+    
+    if(msg2[0] != '!'){
 
-        if(message.content[0] === '!'){
-            break;
-        }
+        for(let a = 0; a < msg2.length; a++){
 
-        else{
-
-        let permutationsArray = findPermutations(msg2[a]);
-
-        if(permutationsArray === undefined)
-            break;
-
-        for(let i = 0; i < permutationsArray.length; i++){
-
-            if(permutationsArray === undefined)
+            if(message.content[0] == '!'){
                 break;
+            }
 
-            if(permutationsArray[i] === "ullu" || permutationsArray[i] === "Ullu" || permutationsArray[i] === "ULLU"){
-                for(let j = 0; j < 5; j++){
-                    console.log("the bug is happening here?");
-                    message.channel.send("Sukhraj is an ullu!");
+            else{
+
+                let permutationsArray = findPermutations(msg2[a]);
+
+                if(permutationsArray === undefined)
+                    break;
+
+                for(let i = 0; i < permutationsArray.length; i++){
+
+                    if(permutationsArray === undefined)
+                        break;
+
+                    if(permutationsArray[i] === "ullu" || permutationsArray[i] === "Ullu" || permutationsArray[i] === "ULLU" || permutationsArray[i] == "ulluu"){
+                        message.channel.send("Sukhraj is an ullu!");
+                    }
+                
+
+                    for(let j = 0; j < blacklistedWords.length; j++){
+                        if(permutationsArray[i] === blacklistedWords[j])
+                            message.channel.send("No swearing bud.");
+                    }
                 }
             }
-
-            for(let j = 0; j < blacklistedWords.length; ++j){
-                if(permutationsArray[i] === blacklistedWords[j])
-                    message.channel.send("No swearing bud.");
-            }
         }
-      }
     }
-    */
 
- 
-    if(args[0] == 'ullu') { 
+    /* Ullu keyword for command is bugged. Do not use */
+    
+         if(args[0] == 'sukhraj') { 
             console.log("Creating embed\n");
+
             const Embed = new MessageEmbed()
             .setTitle("Next Level Code")
             .setColor(0xFF0000)
             .setDescription("What up ULLU");
+
             message.author.send(Embed);
 
             console.log("Embed sent to author\n");
@@ -120,9 +145,9 @@ client.on('message', message => {
                 console.log("Sending author message\n");
                 message.author.send("Sukhraj is an ullu");
             }
-    }
+        }
 
-    else if(args[0] == 'ping') { 
+        else if(args[0] == 'ping') { 
 
             console.log("Creating embed and assigning user to be pinged.");
             let user = message.mentions.users.first();
@@ -167,17 +192,40 @@ client.on('message', message => {
             message.channel.send(Embed);
             message.channel.send("ERROR: Undefined values");
         }
-
-        else{
-            console.log(res.x1 + " " + res.x2);
-
+        else if(res === -1){
             const Embed = new MessageEmbed()
             .setTitle("Quadratic calculator! Powered by ullubot.")
-            .setColor(0x00FF00)
-            .setDescription("Calculator to find the solutions of the quadratic formula\n (ax^2 + bx + c = 0).\n\n To use the command, simply type: !quad a b c");
-
+            .setColor(0xFF0000)
+            .setDescription("Calculator to find the solutions of the quadratic formula\n (ax^2 + bx + c = 0).\n\n To use the command, simply type: !quad a b c \n\n The discriminate calculated is negative, there are no solutions.");
             message.channel.send(Embed);
-            message.channel.send("Solution 1: " + res.x1 + '\n' + "Solution 2: " + res.x2);
+
+            message.channel.send("No solutions.");
+        }
+
+        else{
+            if(res.x2 === undefined){
+                console.log(res.x1 + " ");
+
+                const Embed = new MessageEmbed()
+                .setTitle("Quadratic calculator! Powered by ullubot.")
+                .setColor(0x00FF00)
+                .setDescription("Calculator to find the solutions of the quadratic formula\n (ax^2 + bx + c = 0).\n\n To use the command, simply type: !quad a b c \n\n The discriminate calculated is 0, there is only one solution.");
+
+                message.channel.send(Embed);
+                message.channel.send("Solution: " + res.x1);
+ 
+            }
+            else{
+                console.log(res.x1 + " " + res.x2);
+
+                const Embed = new MessageEmbed()
+                .setTitle("Quadratic calculator! Powered by ullubot.")
+                .setColor(0x00FF00)
+                .setDescription("Calculator to find the solutions of the quadratic formula\n (ax^2 + bx + c = 0).\n\n To use the command, simply type: !quad a b c");
+
+                message.channel.send(Embed);
+                message.channel.send("Solution 1: " + res.x1 + '\n' + "Solution 2: " + res.x2);
+            }
         }
     }
 
