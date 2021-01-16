@@ -10,6 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "discord.js": "^12.5.1",
-    "matplotnode": "^0.4.2"
+    "dotenv": "^8.2.0",
+    "matplotnode": "^0.4.2",
+    "plotly": "^1.0.6"
   }
 }

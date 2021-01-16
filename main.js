@@ -9,7 +9,6 @@
 /* ... If discriminate value is 0, a tuple will have one solution (x1) and the other will be undefined
 */
 
-
 function quadratic_calculator(a, b, c){
 
     if(isNaN(a) || isNaN(b) || isNaN(c) || (a == 0)){ // a == 0 means divide by zero error
@@ -71,11 +70,15 @@ function findPermutations (string) {
 
 // Discord Boilerplate
 
+require('dotenv').config(); // Import API Key for plotly from .env file
+
 const {Client, MessageEmbed} = require('discord.js');
 
 const client = new Client();
 
 const config = require('./config.json');
+
+var plotly = require('plotly')("ArmanR9", process.env.PLOTLY_API_KEY);
 
 
 const PREFIX1 = '!'; // For ullubot (our bot code)
@@ -227,6 +230,53 @@ client.on('message', message => {
                 message.channel.send("Solution 1: " + res.x1 + '\n' + "Solution 2: " + res.x2);
             }
         }
+    }
+
+    else if(args[0] == 'graph'){
+
+        let inputMathEq = args[1];
+        
+
+        let arrX = [];
+        let arrY = [];
+
+        for(let i = -127; i < 128; i++){ //127 data points
+            arrX.push(i);
+            arrY.push(Math.pow(i,2));
+        }
+
+        var trace1 = {
+            x: arrX,
+            y: arrY,
+            type: 'lines'
+        };
+
+       /* var trace2 = {
+            x: [1, 2, 3, 4],
+            y: [16, 5, 11, 9],
+        type: 'scatter'
+       */ //};
+
+        var data = [trace1];
+
+        var layout = {fileopt : "overwrite", filename : "current-file"};
+
+        plotly.plot(data, layout, function (err, msg) {
+            if (err) return console.log(err);
+            console.log(msg);
+
+            const Embed = new MessageEmbed()
+                .setTitle("Graphing calculator! Powered by plotly.")
+                .setColor(0xFFFFF0)
+                .setDescription("Testing graphing stuff\n\n Currently testing quadratic equation\n\n" + msg.url);
+            message.channel.send(Embed);
+        });
+
+          let equation = "y = x^2";
+          let mathbot_cmd = "=tex y = x^2";
+
+          message.channel.send("Equation: " + equation + " \n\nPaste this in chat: " + mathbot_cmd);
+          //message.channel.send(Embed);
     }
 
 });
