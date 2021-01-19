@@ -72,17 +72,35 @@ function findPermutations (string) {
 
 require('dotenv').config(); // Import API Key for plotly from .env file
 
-const {Client, MessageEmbed} = require('discord.js');
+const {Client, MessageEmbed, MessageAttachment} = require('discord.js');
+
+// const Discord = require('discord.js');
 
 const client = new Client();
 
 const config = require('./config.json');
+
+const fs = require('fs');
 
 var plotly = require('plotly')("ArmanR9", process.env.PLOTLY_API_KEY);
 
 
 const PREFIX1 = '!'; // For ullubot (our bot code)
 const PREFIX2 = '='; // Reserved prefix for Math Bot
+
+function getUserFromMention(mention) {
+    if (!mention) return;
+
+    if (mention.startsWith('<@') && mention.endsWith('>')) {
+        mention = mention.slice(2, -1);
+
+        if (mention.startsWith('!')) {
+            mention = mention.slice(1);
+        }
+
+        return client.users.cache.get(mention);
+    }
+}
 
 client.on('ready', () => {
     console.log('Ullu is online!'); 
@@ -150,33 +168,69 @@ client.on('message', message => {
             }
         }
 
-        else if(args[0] == 'ping') { 
+        else if(args[0] == 'ping'){
+
+            let stringToWrite = ''; 
 
             console.log("Creating embed and assigning user to be pinged.");
-            let user = message.mentions.users.first();
+
+            const user = message.mentions.users.first();
+
             let iterations = isNaN(args[2]) ? undefined : parseInt(args[2]);
 
-            const Embed = new MessageEmbed()
-            .setTitle("Wake up!")
-            .setColor(0xFF0000)
-            .setDescription("WAKE UP");
+             const Embed1 = new MessageEmbed()
+                .setTitle("The Pinginator!")
+                .setColor(0xFF0000)
+                .setDescription("Have fun annoying people");
 
-            user.send(Embed)
-            
-            console.log("Sent pinged user the embed");
+            if(user === undefined){
+                console.log("User mentioned is invalid");
+            }
 
-            if(iterations === undefined){
-                for(let z = 0; z < 20; z++){
-                    console.log("Pinging user...");
-                    user.send("Check Discord messages buddy");
-                }
+            else if(Math.sign(iterations) == -1){
+               
+                message.channel.send(Embed1);
+                message.channel.send("Invalid argument given.");
             }
 
             else{
-                for(let z = 0; z < iterations; z++){
-                    console.log("Pinging user...");
-                    user.send("Check Discord messages buddy");
+
+                iterations = iterations > 100 ? 100 : iterations; // Cap number of pings to 100 
+
+                const Embed = new MessageEmbed()
+                .setTitle("Wake up!")
+                .setColor(0xFF0000)
+                .setDescription("WAKE UP");
+
+                user.send(Embed)
+            
+                console.log("Sent pinged user the embed");
+
+                if(iterations === undefined){
+                    for(let z = 0; z < 20; z++){
+                        console.log("Pinging user...");
+                        stringToWrite += "Pinging "+ user.username + " # " + (z+1).toString() + "\n";
+                        user.send("Check Discord messages buddy");
+                    }
                 }
+
+                else{
+                    for(let z = 0; z < iterations; z++){
+                        console.log("Pinging user...");
+                        stringToWrite += "Pinging "+ user.username + " # " + (z+1).toString() + "\n";
+                        user.send("Check Discord messages buddy");
+                    }
+                }
+
+                stringToWrite += "User has been successfully pinged\n"
+                fs.writeFileSync('/tmp/logs.txt', stringToWrite);
+                const buffer = fs.readFileSync('/tmp/logs.txt');
+
+                const attachment = new MessageAttachment(buffer, 'logs.txt');
+
+                message.channel.send(attachment);
+                message.channel.send(Embed1);
+                message.channel.send("The recipient has been successfully annoyed.")
             }
     }
 
@@ -234,11 +288,9 @@ client.on('message', message => {
 
     else if(args[0] == 'graph'){
 
-        let inputMathEq = args[1];
-        
+        let inputMathEq = args; // Get the polynomial string
+        inputMathEq.shift(); // Remove the 'graph' element, from the array
 
-        let arrX = [];
-        let arrY = [];
 
         for(let i = -127; i < 128; i++){ //127 data points
             arrX.push(i);
