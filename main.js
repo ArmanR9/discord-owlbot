@@ -45,7 +45,7 @@ function quadratic_calculator(a, b, c){
 
 // Blacklisted word variations that should be flagged by the bot
 
-const blacklistedWords = ["Fuck", "fuck", "fuuck", "fuuckk", "fucck", "Fucck", "Fucckk", "fuckk", "fuk", "FUK", "Fukk", "Fukkk", "fukkk", "Fulck", "fukk", "Fuk", "fuckkk", "FUCK", "FUUCK", "FUCKK", "FUUCKK", "Fuckk", "Fuuck", "Fuckkk", "bitch", "bitchh", "biitch", "Bitch", "BITCH"];
+const blacklistedWords = ["placeholder", "PlAcEholder", "PLACEHOLDER"];
 
 
 function findPermutations (string) {
