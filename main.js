@@ -47,7 +47,11 @@ function quadratic_calculator(a, b, c){
 
 const blacklistedWords = ["placeholder", "PlAcEholder", "PLACEHOLDER"];
 
-
+/*
+    Code courtesy of user Syntac from
+    https://stackoverflow.com/questions/39927452/recursively-print-all-permutations-of-a-string-javascript
+*/
+ 
 function findPermutations (string) {
 
  if (string.length < 2) return string; // This is our break condition
@@ -60,7 +64,7 @@ function findPermutations (string) {
     if (string.indexOf(char) != i) // if char was used already
       continue; // skip it this time
 
-    var remainingString = string.slice(0, i) + string.slice(i + 1, string.length); //Note: you can concat Strings via '+' in JS
+    var remainingString = string.slice(0, i) + string.slice(i + 1, string.length);
 
     for (var subPermutation of findPermutations(remainingString))
       permutations.push(char + subPermutation)
